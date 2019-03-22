@@ -14,6 +14,7 @@ typedef struct {
 } message;
 
 #define MAILBOX 453
+#define N 100
 
 int main() {
 	int flag, msgflg, msqid;
@@ -25,16 +26,22 @@ int main() {
   		perror("Erro na criacao de mailbox");
 	}
 
-	/* recebe mensagem */
-	msgflg = MSG_NOERROR;
-	flag = msgrcv(msqid, &m, 100, 0, msgflg);
+  for (int i = 0;i < N;i++) msgsnd(msqid, &m, strlen(m.content) + 1, 0);
 
-	if(flag >= 0) {
-  		printf("o tipo da mensagem eh: %ld\n", m.type);
-  		printf("o conteudo da mensagem eh: %s\n", m.content);
-	} else {
-  		perror("erro na recepcao");
-	}
+  while (1) {
+    /* recebe mensagem */
+    msgflg = MSG_NOERROR;
+    flag = msgrcv(msqid, &m, 100, 0, msgflg);
+
+    if(flag >= 0) {
+      printf("o tipo da mensagem eh: %ld\n", m.type);
+      printf("o conteudo da mensagem eh: %s\n", m.content);
+    } else {
+      perror("erro na recepcao");
+    }
+
+    sprintf(m.content, "%s", "");
+    msgsnd(msqid, &m, strlen(m.content) + 1, 0);
+  }
 
 }
-

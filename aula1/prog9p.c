@@ -22,15 +22,18 @@ int main() {
 	/* cria estrutura de mensagem */
 	msqid = msgget(MAILBOX, 0666 | IPC_CREAT);
 	if(msqid <= 0) {
-  		perror("erro na criacao de mailbox");
-  	}
+		perror("erro na criacao de mailbox");
+	}
 
-	/* preenche estrutura de mensagem */
-	m.type = 1;
-	sprintf(m.content, "%s", "Esta eh uma mensagem de teste");
+  while (1) {
+    /* preenche estrutura de mensagem */
+    msgrcv(msqid, &m, 100, 0, flag);
+    m.type = 1;
+    sprintf(m.content, "%s", "Esta eh uma mensagem de teste");
 
-	/* envia */
-	flag = msgsnd(msqid, &m, strlen(m.content) + 1, 0);
-	printf("o resultado eh: %d\n", flag);
+    /* envia */
+    flag = msgsnd(msqid, &m, strlen(m.content) + 1, 0);
+    printf("o resultado eh: %d\n", flag);
+
+  }
 }
-
